@@ -187,7 +187,6 @@ class WindingFill:
         with it, Apple's software renderer (macOS without a GPU) loses whole
         fills for some rectangles on a multisampled float buffer.
         """
-        camera = target.camera
         filled, colours = [], []
         for node, geo in zip(nodes, geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
@@ -198,7 +197,7 @@ class WindingFill:
                 paint_colors(
                     path.fill,
                     path,
-                    lambda path, rgbas: _view.shaded_rgbas(camera, path, rgbas),
+                    lambda path, rgbas: _view.shaded_rgbas(target.lights, path, rgbas),
                 )
             )
         if not filled:

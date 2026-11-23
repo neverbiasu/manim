@@ -6,7 +6,8 @@ the Cairo renderer as one polygon per face, sorted far to near and lit per face.
 parametric surfaces of this kind.
 
 A mesh has a :mod:`material <manim.material>`: :class:`.Pbr` (the default) lights it
-under a :class:`.ThreeDCamera`'s light, :class:`.Unlit` shows its colors as they are.
+by the scene's lights (:mod:`manim.light`), :class:`.Unlit` shows its colors as they
+are.
 """
 
 from __future__ import annotations
