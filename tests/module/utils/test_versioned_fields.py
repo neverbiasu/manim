@@ -165,11 +165,11 @@ def test_copies_get_a_new_uid(copy_function):
     assert Square().uid != square.uid
 
 
-def test_style_and_pixel_arrays_are_read_only():
+def test_paint_and_pixel_arrays_are_read_only():
     square = Square().set_fill(opacity=1)
     image = ImageMobject(np.zeros((2, 2, 4), dtype=np.uint8))
 
-    for array in (square.fill_rgbas, square.stroke_rgbas, image.pixel_array):
+    for array in (square.fill.rgbas, square.stroke.rgbas, image.pixel_array):
         with pytest.raises(ValueError, match="read-only"):
             array[0] = 1
 
@@ -221,7 +221,7 @@ def test_animation_steps_that_change_nothing_keep_versions():
     moving = start.copy()
 
     moving.interpolate(start, end, 1)
-    versions = {name: field_version(moving, name) for name in ("points", "fill_rgbas")}
+    versions = {name: field_version(moving, name) for name in ("points", "fill")}
     moving.interpolate(start, end, 1)
     assert {name: field_version(moving, name) for name in versions} == versions
 
