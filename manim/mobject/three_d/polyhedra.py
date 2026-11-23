@@ -478,10 +478,9 @@ def _face(corners: Point3DLike_Array, config: dict[str, Any]) -> PolygonFace:
     """A face of a polyhedron, styled by ``faces_config``: the arguments of
     :class:`.Polygon` that a face had (``fill_color``, ``fill_opacity``,
     ``stroke_color``, ``stroke_width``, ``stroke_opacity``, ``color``), and those of
-    :class:`.PolygonFace` (``material``, ...). ``shade_in_3d`` has no effect.
+    :class:`.PolygonFace` (``material``, ...).
     """
     config = dict(config)
-    config.pop("shade_in_3d", None)
     color = config.pop("color", None)
     fill_color = config.pop("fill_color", None) or color or BLUE
     opacity = config.pop("fill_opacity", None)

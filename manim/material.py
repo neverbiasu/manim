@@ -14,7 +14,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-__all__ = ["Material", "Pbr", "Unlit"]
+__all__ = ["Material", "Pbr", "Unlit", "interpolate_material"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,3 +57,27 @@ class Pbr:
 
 
 Material = Unlit | Pbr
+
+
+def interpolate_material(start: Material, end: Material, alpha: float) -> Material:
+    """The material at progress ``alpha`` from ``start`` to ``end``.
+
+    Two :class:`.Pbr` materials interpolate their parameters; at ``alpha`` 1 the
+    result is ``end`` itself. Between other materials, the material switches to
+    ``end`` when ``alpha`` reaches 1.
+    """
+    if alpha >= 1 or start == end:
+        return end
+    if isinstance(start, Pbr) and isinstance(end, Pbr):
+        if alpha <= 0:
+            return start
+        return Pbr(
+            roughness=(1 - alpha) * start.roughness + alpha * end.roughness,
+            metallic=(1 - alpha) * start.metallic + alpha * end.metallic,
+            emissive=(
+                (1 - alpha) * start.emissive[0] + alpha * end.emissive[0],
+                (1 - alpha) * start.emissive[1] + alpha * end.emissive[1],
+                (1 - alpha) * start.emissive[2] + alpha * end.emissive[2],
+            ),
+        )
+    return start

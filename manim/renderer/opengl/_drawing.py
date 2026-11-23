@@ -30,7 +30,6 @@ from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
     STROKE_WIDTH_UNIT,
     FacingCamera,
-    LegacyShaded,
     RCameraView,
     RColorField,
     RImage,
@@ -896,13 +895,8 @@ class SnapshotDrawing:
             geometry.append(geo)
             widths.append(stroke.width)
             colours.append(
-                paint_colors(
-                    stroke.paint,
-                    path,
-                    lambda path, rgbas: _view.shaded_rgbas(
-                        self._target.lights, path, rgbas
-                    ),
-                )
+                # Strokes are not lit.
+                paint_colors(stroke.paint)
             )
         if not geometry:
             return
@@ -1009,7 +1003,7 @@ def _groups(
         single = (
             tuple(path.fill.rgba)
             if isinstance(path.fill, RSolid)
-            and type(path.material) is not LegacyShaded
+            and not isinstance(path.material, Pbr)
             and path.stroke.width == 0
             else None
         )
