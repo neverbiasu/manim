@@ -170,12 +170,20 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
   :class:`.VGroup`.
 - The arguments ``should_make_jagged``, ``surface_piece_config`` and
   ``pre_function_handle_to_anchor_scale_factor`` are gone.
-- They are lit by their ``material`` (:class:`.Pbr` by default) under a
-  :class:`.ThreeDCamera`'s light: faces turned away from the light are darker than
-  before, and the surface has highlights. ``material=Unlit()`` shows its colors as
-  they are. Under other cameras, surfaces are not lit.
-- A surface without ``checkerboard_colors`` is lit smoothly; with them, each face
-  is lit flat.
+- They are lit by their ``material`` (:class:`.Pbr` by default) under the scene's
+  lights (:mod:`manim.light`; a :class:`.ThreeDScene` has one): faces turned away
+  from the light are darker than before, and the surface has highlights.
+  ``material=Unlit()`` shows its colors as they are. Without lights, surfaces are
+  not shaded.
+- Surfaces are smooth, in one colour and without outlines by default: they used to
+  have a ``[BLUE_D, BLUE_E]`` checkerboard and light grey outlines of width 0.5.
+  ``checkerboard_colors=[BLUE_D, BLUE_E]`` and ``stroke_width=0.5`` give that look
+  back; with a checkerboard, each face is lit flat.
+- :meth:`~.Surface.set_fill_by_value` colours the points of a smooth surface, so the
+  colours blend across faces on OpenGL (Cairo draws each face in the mean colour of
+  its corners); on a surface with a checkerboard it colours each face.
+- :class:`.Line3D` is white by default, as :class:`.Line` and :class:`.Arrow3D`
+  are; it was the blue of the surface.
 - The end caps of :class:`.Cylinder` (``base_top``, ``base_bottom``) and the base of
   :class:`.Cone` (``base_circle``) are discs of the same kind, lit as the side is,
   not :class:`.Circle` paths.
