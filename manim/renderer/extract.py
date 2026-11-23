@@ -24,7 +24,7 @@ from manim.mobject.types.image_mobject import (
 )
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.paint import Paint
+from manim.paint import ColorField, Paint
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
@@ -32,6 +32,7 @@ from manim.renderer.snapshot import (
     Payload,
     Placement,
     RCameraView,
+    RColorField,
     RImage,
     RLinearGradient,
     RMesh,
@@ -99,7 +100,7 @@ class Extractor:
 
     This relies on one rule: a snapshot is a function of the mobject's own fields.
     Mobjects whose snapshot has no key (see :attr:`.RNode.key`: classes with
-    ``_drawn_from_fields = False``, camera views, paths masked by an image object)
+    ``_drawn_from_fields = False``, camera views)
     and mobjects with a fixed orientation, whose center comes from a function, are
     taken anew every time. With :data:`CHECK_SNAPSHOTS` (``MANIM_CHECK_SNAPSHOTS=1``,
     as in Manim's tests), every reused snapshot is compared with a fresh one, so a
@@ -262,15 +263,7 @@ def _key(
     fields (see :func:`_revision`), and the point a fixed orientation follows (not a
     field value); ``None`` for mobjects that can change without a field changing.
     """
-    if (
-        not mobject._drawn_from_fields
-        or isinstance(payload, RCameraView)
-        # An image object can change without being assigned again.
-        or (
-            isinstance(payload, RPath)
-            and not isinstance(payload.mask, (str, type(None)))
-        )
-    ):
+    if not mobject._drawn_from_fields or isinstance(payload, RCameraView):
         return None
     center = (
         tuple(placement.center.tolist())
@@ -351,7 +344,6 @@ _PATH_SLOTS: dict[str, tuple[str, ...]] = {
     ),
     "material": ("shade_in_3d",),
     "depth_reference": ("shade_in_3d", "points"),
-    "mask": ("background_image",),
 }
 
 
@@ -364,6 +356,8 @@ def _path(vmobject: VMobject) -> RPath:
     def paint(value: Paint | None) -> RPaint:
         if value is None:
             return _NO_PAINT
+        if isinstance(value, ColorField):
+            return RColorField(value.grid, value.corners, value.opacity, value.grid_id)
         rgbas = value.rgbas
         if len(rgbas) == 1:
             return RSolid(rgbas[0])
@@ -399,7 +393,6 @@ def _path(vmobject: VMobject) -> RPath:
         material=_LEGACY_SHADED if shade_in_3d else _UNLIT,
         depth_reference=_own_center(points) if shade_in_3d else None,
         tolerance=vmobject.tolerance_for_point_equality,
-        mask=vmobject.background_image,
     )
 
 

@@ -89,7 +89,6 @@ def mesh_faces(
         "stroke": max(geometry, versions.get("stroke", 0)),
         "material": 0,
         "depth_reference": geometry,
-        "mask": 0,
     }
     nodes = []
     for index in np.argsort(depth, kind="stable"):
@@ -106,7 +105,6 @@ def mesh_faces(
             # Fixed faces keep the order above, after the scene's 3D paths.
             depth_reference=None if node.fixed_in_frame else centers[index],
             tolerance=1e-6,
-            mask=None,
         )
         nodes.append(
             RNode(
